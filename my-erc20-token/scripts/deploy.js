@@ -1,16 +1,29 @@
-const hre = require("hardhat");
+const { ethers } = require("hardhat");
 
 async function main() {
-  const initialSupply = hre.ethers.parseUnits("1000", 18); // 1000 token
-  const MyToken = await hre.ethers.deployContract("MyToken", [initialSupply]);
+  const [deployer] = await ethers.getSigners();
+  
+  console.log("Deploying contracts with the account:", deployer.address);
 
-  console.log(`Deploying contract...`);
-  await MyToken.waitForDeployment();
+  // Lấy balance của deployer
+  const balance = await ethers.provider.getBalance(deployer.address);
+  console.log("Account balance:", ethers.formatEther(balance), "ETH");
 
-  console.log(`Token deployed to: ${await MyToken.getAddress()}`);
+  // Deploy contract
+  const Token = await ethers.getContractFactory("MyToken");
+  const token = await Token.deploy(1000000); // Initial supply of tokens
+
+  // Chờ deploy xong
+  await token.waitForDeployment();
+
+  // Lấy địa chỉ contract
+  const tokenAddress = await token.getAddress();
+  console.log("Token address:", tokenAddress);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
