@@ -1,0 +1,7 @@
+admin.peers
+eth.acounts
+eth.accounts
+eth.getBalance(eth.accounts[0])
+eth.accounts
+miner
+eth.getBalance(eth.accounts[0])

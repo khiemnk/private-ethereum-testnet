@@ -1,0 +1,13 @@
+
+admin.addPeer("enode://17f53d48a554e34878a53535eebd9c9ea4331f1f14da68039cd50786f5b6aa580bb03007d31e495cbeeb51947ee09660b23a8b5494b4b71d95248739b0646dd6@127.0.0.1:30305")
+admin.peers
+web3.eth.getNodeInfo
+web3
+miner.start(1)
+eth.accounts
+eth.getBalance(eth.accounts[0])
+miner.start(1)
+eth.accounts
+miner.setEtherbase(eth.accounts[0])
+eth.getBalance(eth.accounts[0])
+miner
