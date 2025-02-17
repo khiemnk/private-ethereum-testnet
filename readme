@@ -2,37 +2,54 @@
 rm -rf ./node1/geth 
 
 ## Run node with command line
+
 Node1:
-geth --datadir ./node1 --networkid 1234567 --syncmode "full" \
-  --port 30303 --http --http.addr "127.0.0.1" --http.port 8545 \
-  --http.api "eth,net,web3,admin" --authrpc.port 8551 --allow-insecure-unlock
+geth init --datadir ./node1 genesis.json
 
-./prysm.sh beacon-chain --datadir ./prysm --execution-endpoint=http://127.0.0.1:8551 --genesis-state=genesis.ssz
+# geth --datadir "./" --port 30304 \
+#   --bootnodes 'enode://82a0be2dc48a74fc542110c0565a7f5e39a0a7e840e4a2d97b2bed8f42da132c336f778938afddd5dc90128a6743405cc63ec6c32ad19259f6d300c58a4ae8a6@127.0.0.1:0?discport=30301' \
+#   --authrpc.port 8547 --ipcdisable --allow-insecure-unlock --http \
+#   --http.corsdomain "https://remix.ethereum.org" \
+#   --http.api web3,eth,debug,personal,net \
+#   --networkid 1234567 \
+#   --unlock 0xE529b9e0D1176074D058622E70F8E938700eDCF2 \
+#   --password password.txt \
+#   --mine \
+#   --miner.etherbase 0xE529b9e0D1176074D058622E70F8E938700eDCF2
 
+geth --datadir "./node1" --port 30304 \
+  --bootnodes 'enode://82a0be2dc48a74fc542110c0565a7f5e39a0a7e840e4a2d97b2bed8f42da132c336f778938afddd5dc90128a6743405cc63ec6c32ad19259f6d300c58a4ae8a6@127.0.0.1:0?discport=30301' \
+  --authrpc.port 8547 --allow-insecure-unlock --http \
+  --http.corsdomain "https://remix.ethereum.org" \
+  --http.api web3,eth,debug,personal,net \
+  --networkid 1234567 \
+  --unlock 0xE529b9e0D1176074D058622E70F8E938700eDCF2 \
+  --password "./node1/password.txt" \
+  --mine \
+  --miner.etherbase 0xE529b9e0D1176074D058622E70F8E938700eDCF2
 
 Node2:
-geth --datadir ./node2 --networkid 1234567 --syncmode "full" \
-  --port 30304 --http --http.addr "127.0.0.1" --http.port 8546 --http.api "eth,net,web3,admin" \
-  --authrpc.port 8552 --allow-insecure-unlock
+geth init --datadir ./node2 genesis.json
 
-geth --datadir ./node1 --networkid 1234567 --syncmode "full" \
-  --port 30304 --http --http.addr "127.0.0.1" --http.port 8546 --http.api "eth,net,web3,admin,engine" \
-  --authrpc.port 8552 --allow-insecure-unlock --authrpc.jwtsecret ./jwt.hex
+geth --datadir "./node2" --port 30306 \
+  --bootnodes "enode://82a0be2dc48a74fc542110c0565a7f5e39a0a7e840e4a2d97b2bed8f42da132c336f778938afddd5dc90128a6743405cc63ec6c32ad19259f6d300c58a4ae8a6@127.0.0.1:0?discport=30301" \
+  --authrpc.port 8546 \
+  --networkid 1234567 \
+  --unlock 0x8FcB32d71D4252E66Eb67EF483C3B9EeD3626eDb \
+  --password "./node2/password.txt"
 
+## Connect to node
+geth attach ipc:./node1/geth.ipc
+geth attach ipc:./node2/geth.ipc
 ## Connect node P2P
 * Using
 admin.addPeer("address enode")
 * Check
 admin.peers -> to show peer of current node
 
-## Connect to node
-geth attach ipc:./node1/geth.ipc
+
 ## Deploy token
-* install truffle
-npm install -g truffle
-* create token
-truffle init MyToken && cd MyToken
-* install lib
-npm install @openzeppelin/contracts
+* Using hardhat
+npx hardhat run scripts/deploy.js --network localhost
 
 
